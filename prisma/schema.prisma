@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model team {
+  id                         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                       String
+  competition_id             String        @db.Uuid
+  image                      String?
+  draws_draws_team1_idToteam draws[]       @relation("draws_team1_idToteam")
+  draws_draws_team2_idToteam draws[]       @relation("draws_team2_idToteam")
+  participant                participant[]
+  competition                competition   @relation(fields: [competition_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model competition {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  team team[]
+}
+
+model venue {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  short_name  String
+  timezone    String
+  venue_court venue_court[]
+}
+
+model fixture {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  draw_id        String      @db.Uuid
+  venue_court_id String      @db.Uuid
+  match_date     DateTime    @db.Date
+  start_time     DateTime    @db.Time(6)
+  end_time       DateTime    @db.Time(6)
+  draws          draws       @relation(fields: [draw_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  venuecourt     venue_court @relation(fields: [venue_court_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model   venue_court {
+  id           String    @id(map: "venuecourt_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  venue_id     String?   @db.Uuid
+  court_number Int
+  fixture      fixture[]
+  venue        venue?    @relation(fields: [venue_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "venuecourt_venue_id_fkey")
+}
+
+model draws {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  team1_id                  String    @db.Uuid
+  team2_id                  String    @db.Uuid
+  team_draws_team1_idToteam team      @relation("draws_team1_idToteam", fields: [team1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  team_draws_team2_idToteam team      @relation("draws_team2_idToteam", fields: [team2_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fixture                   fixture[]
+}
+
+model participant {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id String @db.Uuid
+  team_id String @db.Uuid
+  role    String
+  team    team   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user    user   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user {
+  id          String        @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name  String
+  last_name   String
+  participant participant[]
+}
