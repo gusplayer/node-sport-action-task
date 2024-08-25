@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, NotFoundException } from "@nestjs/common"
 import { Prisma } from "@prisma/client"
 
 import { PrismaService } from "@/shared/services"
@@ -13,6 +13,17 @@ export class ParticipantService {
 		private readonly prismaService: PrismaService,
 		private readonly paginationUtil: PaginationUtil
 	) {}
+
+	async findParticipantById(id: string) {
+		const participant = await this.prismaService.participant.findUnique({
+			where: { id },
+			include: { team: { include: { competition: true } }, user: true }
+		})
+
+		if (!participant) throw new NotFoundException(`User ${id} doesn't exists`)
+
+		return participant
+	}
 
 	async findParticipants(filter: FilterParcicipantsDto) {
 		const { page = 1, limit = 10, firstName, lastName } = filter
