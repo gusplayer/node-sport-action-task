@@ -41,6 +41,7 @@ async function bootstrap() {
 		useGlobalPrefix: true
 	})
 
+	app.enableCors()
 	await app.listen(3000)
 }
 bootstrap()
