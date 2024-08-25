@@ -5,16 +5,7 @@ import { PrismaService } from "@/shared/services"
 import { PaginationUtil } from "@/shared/utils"
 
 import { FilterParcicipantsDto } from "./dtos/filter-participants.dto"
-
-interface ParticipantsQueryResult {
-	match_date: string
-	coach_id: number
-	first_name: string
-	last_name: string
-	venue_name: string
-	team_count: number
-	total_records: number
-}
+import { ParticipantsQueryResult } from "./interfaces/participant-query-result"
 
 @Injectable()
 export class ParticipantService {
