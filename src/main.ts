@@ -30,7 +30,8 @@ async function bootstrap() {
 		.setTitle("Sport Actions API")
 		.setDescription("Tech interview project")
 		.setVersion("1.0")
-		.addTag("sport-actions")
+		.addServer("http://localhost:3000/", "Local environment")
+		.addServer("https://node-sport-action-task-production.up.railway.app/", "Production")
 		.build()
 
 	const document = SwaggerModule.createDocument(app, config)
